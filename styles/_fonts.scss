@@ -1,0 +1,48 @@
+@font-face {
+  font-family: 'Mondwest';
+  src: url('/fonts/Mondwest-Regular/Mondwest-Regular.woff2') format('woff2');
+  font-display: swap;
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: 'Non Natural Grotesk';
+  src: url('/fonts/Non-Natural-Grotesk-Bold/NONNaturalGrotesk-Bold.woff2')
+    format('woff2');
+  font-display: swap;
+  font-weight: 700;
+}
+
+@font-face {
+  font-family: 'Non Natural Grotesk';
+  src: url('/fonts/Non-Natural-Grotesk-Regular/NONNaturalGrotesk-Regular.woff2')
+    format('woff2');
+  font-display: swap;
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: 'Non Natural Mono';
+  src: url('/fonts/Non-Natural-Mono-Light/NONNaturalMono-Light.woff2')
+    format('woff2');
+  font-display: swap;
+  font-weight: 400;
+}
+
+:root {
+  --font-mondwest: 'Mondwest';
+  --font-NonNaturalGrotesk: 'Non Natural Grotesk';
+  --font-NonNaturalMono: 'Non Natural Mono';
+}
+
+.mondwest {
+  font-family: var(--font-mondwest);
+}
+
+.non-natural-grotesk {
+  font-family: var(--font-NonNaturalGrotesk);
+}
+
+.non-natural-mono {
+  font-family: var(--font-NonNaturalMono);
+}

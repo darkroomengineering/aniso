@@ -1,0 +1,36 @@
+@use 'sass:math';
+@import './_variables.scss';
+
+// Breakpoint
+@mixin mobile {
+  @media (max-width: #{$mobile-breakpoint}) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: #{$mobile-breakpoint}) {
+    @content;
+  }
+}
+
+@function desktop-vw($pixels, $base-vw: $desktop-viewport) {
+  @return math.div($pixels * 100vw, $base-vw);
+}
+
+@function mobile-vw($pixels, $base-vw: $mobile-viewport) {
+  @return math.div($pixels * 100vw, $base-vw);
+}
+
+@function columns($columns) {
+  @return calc(
+    (#{$columns} * var(--layout-column-width)) +
+      ((#{$columns} - 1) * var(--layout-columns-gap))
+  );
+}
+
+@mixin hover {
+  @media (hover: hover) {
+    @content;
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "name": "aniso",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "postbuild": "next-sitemap",
+    "analyze": "cross-env ANALYZE=true next build",
+    "analyze:server": "cross-env BUNDLE_ANALYZE=server next build",
+    "analyze:browser": "cross-env BUNDLE_ANALYZE=browser next build",
+    "prepare": "husky install"
+  },
+  "dependencies": {
+    "@radix-ui/react-accordion": "^1.0.0",
+    "@radix-ui/react-select": "^1.0.0",
+    "@react-spring/rafz": "^9.5.2",
+    "@react-spring/web": "^9.5.2",
+    "@react-three/drei": "^9.22.7",
+    "@react-three/fiber": "^8.3.1",
+    "@react-three/postprocessing": "^2.6.2",
+    "@studio-freight/hamo": "^0.4.23",
+    "clsx": "^1.2.1",
+    "cross-env": "^7.0.3",
+    "debounce": "^1.2.1",
+    "duplicate-package-checker-webpack-plugin": "^3.0.0",
+    "embla-carousel-autoplay": "^7.0.1",
+    "embla-carousel-react": "^7.0.1",
+    "glslify-loader": "^2.0.0",
+    "husky": "^8.0.1",
+    "leva": "^0.9.30",
+    "lint-staged": "^13.0.3",
+    "next": "12.2.5",
+    "next-pwa": "5.5.5",
+    "next-seo": "^5.5.0",
+    "next-sitemap": "^3.1.20",
+    "postprocessing": "^6.28.5",
+    "raw-loader": "^4.0.2",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-use": "^17.4.0",
+    "resize-observer-polyfill": "^1.5.1",
+    "sass": "^1.54.4",
+    "stats.js": "^0.17.0",
+    "three": "^0.143.0",
+    "use-dark-mode": "^2.3.1",
+    "uuid": "^8.3.2",
+    "zustand": "^4.1.0"
+  },
+  "devDependencies": {
+    "@next/bundle-analyzer": "^12.2.5",
+    "@svgr/webpack": "^6.3.1",
+    "critters": "^0.0.16",
+    "eslint": "8.22.0",
+    "eslint-config-next": "12.2.5",
+    "eslint-config-prettier": "^8.5.0",
+    "next-transpile-modules": "^9.0.0",
+    "prettier": "^2.7.1",
+    "prettier-eslint": "^15.0.1"
+  },
+  "lint-staged": {
+    "*.js": "eslint --cache --fix",
+    "*.{js,css,scss,md}": "prettier --write"
+  },
+  "pnpm": {
+    "overrides": {
+      "next-pwa": "5.5.4",
+      "throttle-debounce": "5.0.0",
+      "@radix-ui/react-portal": "0.1.4",
+      "@radix-ui/react-primitive": "0.1.4",
+      "extend-shallow": "3.0.2",
+      "is-extendable": "1.0.1",
+      "scheduler": "0.22.0",
+      "zustand": "4.1.0",
+      "react-is": "17.0.2"
+    }
+  }
+}

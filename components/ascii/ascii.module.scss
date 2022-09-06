@@ -1,0 +1,25 @@
+.instruction {
+  position: absolute;
+  z-index: 2;
+  color: white;
+  text-align: left;
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.dropzone {
+  position: fixed !important;
+  left: 0 !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  right: 0 !important;
+  transform: unset !important;
+
+  * {
+    position: absolute;
+    left: 0 !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    right: 0 !important;
+  }
+}

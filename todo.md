@@ -1,0 +1,3 @@
+- export image
+- export video
+- be able to set some glb colors
