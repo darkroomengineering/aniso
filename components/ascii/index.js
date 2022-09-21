@@ -318,7 +318,7 @@ function Inner() {
 }
 
 const DEFAULT = {
-  characters: ' *,    ./O#FLY',
+  characters: ' *,    ./O#SF',
   granularity: 8,
   charactersLimit: 16,
   fontSize: 72,
