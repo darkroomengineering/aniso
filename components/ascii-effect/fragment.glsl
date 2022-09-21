@@ -54,21 +54,48 @@ void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor)
 
     vec4 ascii = texture2D(uCharactersTexture, charUV);
 
-    if(uOverwriteColor) {
-        ascii.rgb *= uColor;
-        ascii.a *= pixelizedColor.a;
-    } else {
-        ascii *= pixelizedColor;
-    }
+    vec4 color = ascii;
 
-    outputColor = ascii;
+
+    // else {
+    //     color = pixelizedColor * ascii.r;
+    // }
+
+    // if(uGreyscale) {
+    //     color.rgb = vec3(grayscale(pixelizedColor.rgb));
+    // }
 
     if(uFillPixels) {
-        outputColor = pixelizedColor + vec4(ascii.r);
+        if(uOverwriteColor) {
+            color.rgb = uColor * ceil(pixelizedColor.rgb);
+
+            if(uGreyscale) {
+                color.rgb *= grayscale(pixelizedColor.rgb);
+            }
+        } else if (uGreyscale) {
+            color.rgb = vec3(grayscale(pixelizedColor.rgb));
+        } else {
+            color.rgb = pixelizedColor.rgb;
+        }
+
+
+
+        color.rgb += vec3(ascii.r);
+        color.a = pixelizedColor.a;
+    } else if(uOverwriteColor) {
+        color.rgb = uColor * ascii.r;
+        color.a = pixelizedColor.a;
+
+        if(uGreyscale) {
+            color.rgb *= grayscale(pixelizedColor.rgb);
+        }
+    } else if (uGreyscale) {
+        color.rgb = vec3(grayscale(pixelizedColor.rgb)) * ascii.r;
+    } else {
+        color = pixelizedColor * ascii.r;
     }
 
-    if(uGreyscale) {
-        outputColor.rgb = vec3(grayscale(outputColor.rgb));
-    }
-    
+
+
+    outputColor = color;
 }

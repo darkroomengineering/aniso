@@ -1,14 +1,13 @@
-import {
-  Html,
-  OrbitControls,
-  useAspect,
-  useContextBridge,
-} from '@react-three/drei'
+import { OrbitControls, useAspect, useContextBridge } from '@react-three/drei'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { EffectComposer } from '@react-three/postprocessing'
+import cn from 'clsx'
 import { ASCIIEffect } from 'components/ascii-effect/index'
 import { FontEditor } from 'components/font-editor'
+import { GUI } from 'components/gui'
 import { button, useControls } from 'leva'
+import { text } from 'lib/leva/text'
+import { useStore } from 'lib/store'
 import { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import {
   AnimationMixer,
@@ -20,13 +19,16 @@ import {
 } from 'three'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import tunnel from 'tunnel-rat'
 import s from './ascii.module.scss'
 import { AsciiContext } from './context'
+
+const ui = tunnel()
 
 function Scene() {
   const ref = useRef()
 
-  const [asset, setAsset] = useState('/flower.jpeg')
+  const [asset, setAsset] = useState('/bust.glb')
 
   const gltfLoader = useMemo(() => {
     const loader = new GLTFLoader()
@@ -86,6 +88,10 @@ function Scene() {
   const [texture, setTexture] = useState()
 
   useEffect(() => {
+    if (gltf) setTexture(null)
+  }, [gltf])
+
+  useEffect(() => {
     let src = asset
 
     if (
@@ -96,6 +102,12 @@ function Scene() {
     ) {
       const video = document.createElement('video')
 
+      function onLoad() {
+        setTexture(new VideoTexture(video))
+      }
+
+      video.addEventListener('loadedmetadata', onLoad, { once: true })
+
       video.src = src
       video.crossOrigin = 'anonymous'
       video.muted = true
@@ -103,8 +115,6 @@ function Scene() {
       video.loop = true
       video.autoplay = true
       video.play()
-
-      setTexture(new VideoTexture(video))
     } else if (
       src.startsWith('data:image') ||
       src.includes('.jpg') ||
@@ -119,61 +129,114 @@ function Scene() {
 
   const { viewport, camera } = useThree()
 
-  const initialCamera = useRef()
+  // const initialCamera = useRef()
 
-  useEffect(() => {
-    initialCamera.current = camera.clone()
-  }, [])
+  // useEffect(() => {
+  //   initialCamera.current = camera.clone()
+  // }, [])
 
-  useEffect(() => {
-    setTimeout(() => {
-      camera.position.copy(initialCamera.current.position)
-      camera.rotation.copy(initialCamera.current.rotation)
-    }, 0)
-  }, [texture, gltf, camera])
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     camera.position.copy(initialCamera.current.position)
+  //     camera.rotation.copy(initialCamera.current.rotation)
+  //   }, 0)
+  // }, [texture, gltf, camera])
+
+  const dimensions = useMemo(() => {
+    if (!texture) return
+    if (texture.isVideoTexture) {
+      return [texture.image.videoWidth, texture.image.videoHeight]
+    } else {
+      return [texture.image.naturalWidth, texture.image.naturalHeight]
+    }
+  }, [texture])
 
   const scale = useAspect(
-    texture?.image?.naturalWidth || viewport.width, // Pixel-width
-    texture?.image?.naturalHeight || viewport.height, // Pixel-height
+    dimensions?.[0] || viewport.width, // Pixel-width
+    dimensions?.[1] || viewport.height, // Pixel-height
     1 // Optional scaling factor
   )
 
   const { fit } = useContext(AsciiContext)
 
+  const [drag, setDrag] = useState(false)
+  const dropzone = useRef()
+
+  useEffect(() => {
+    function onDragEnter(e) {
+      setDrag(true)
+    }
+
+    function onDragLeave(e) {
+      if (e.srcElement !== dropzone.current) return
+      setDrag(false)
+    }
+
+    window.addEventListener('dragenter', onDragEnter)
+    window.addEventListener('dragleave', onDragLeave)
+
+    return () => {
+      window.removeEventListener('dragenter', onDragEnter)
+      window.removeEventListener('dragleave', onDragLeave)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (texture) {
+      camera.position.set(0, 0, 5)
+      camera.rotation.set(0, 0, 0)
+      camera.zoom = 1
+    } else {
+      camera.position.set(500, 250, 500)
+    }
+
+    camera.updateProjectionMatrix()
+  }, [camera, texture])
+
   return (
     <>
-      <Html zIndexRange={[1, 1]} wrapperClass={s.dropzone}>
-        <div
-          onDrop={(e) => {
-            e.preventDefault()
+      <ui.In>
+        {drag && (
+          <div
+            ref={dropzone}
+            className={s.dropzone}
+            onDrop={(e) => {
+              e.preventDefault()
 
-            const reader = new FileReader()
-            reader.addEventListener(
-              'load',
-              function () {
-                setAsset(reader.result)
-              },
-              false
-            )
+              setDrag(false)
 
-            if (e.dataTransfer.files[0]) {
-              reader.readAsDataURL(e.dataTransfer.files[0])
-            }
-          }}
-          onDragOver={(e) => {
-            e.preventDefault()
-          }}
-        />
-      </Html>
+              const reader = new FileReader()
+              reader.addEventListener(
+                'load',
+                function () {
+                  setAsset(reader.result)
+                },
+                false
+              )
+
+              if (e.dataTransfer.files[0]) {
+                reader.readAsDataURL(e.dataTransfer.files[0])
+              }
+            }}
+            onDragOver={(e) => {
+              e.preventDefault()
+            }}
+          />
+        )}
+      </ui.In>
 
       <group ref={ref}>
-        {/* <mesh geometry={gltf.nodes.Cube.geometry}>
-          <meshBasicMaterial color="#ff0000" />
-        </mesh> */}
-
-        {gltf && !texture && <OrbitControls />}
-
-        {gltf && <primitive object={gltf} />}
+        {gltf && (
+          <>
+            <OrbitControls makeDefault />
+            <group
+              scale={200}
+              position={asset === '/bust.glb' ? [-50, -50, 0] : [0, 0, 0]}
+            >
+              <primitive object={gltf} />
+            </group>
+          </>
+        )}
 
         {texture && (
           <mesh scale={fit ? scale : [viewport.width, viewport.height, 1]}>
@@ -181,11 +244,6 @@ function Scene() {
             <meshBasicMaterial map={texture} />
           </mesh>
         )}
-
-        {/* <mesh scale={2}>
-          <boxBufferGeometry attach="geometry" args={[1, 1, 1]} />
-          <meshNormalMaterial attach="material" />
-        </mesh> */}
       </group>
     </>
   )
@@ -194,30 +252,16 @@ function Scene() {
 function Postprocessing() {
   const { gl, viewport } = useThree()
   const { set } = useContext(AsciiContext)
-  // const effectComposer = useRef()
 
   useEffect(() => {
     set({ canvas: gl.domElement })
   }, [gl])
-
-  // useControls(() => ({
-  //   export: button(() => {
-  //     let a = document.createElement('a')
-  //     a.download = 'ASCII'
-  //     // effectComposer.current.render(scene, camera)
-  //     requestAnimationFrame(() => {
-  //       a.href = gl.domElement.toDataURL('image/png;base64')
-  //       a.click()
-  //     })
-  //   }),
-  // }))
 
   const {
     charactersTexture,
     granularity,
     charactersLimit,
     fillPixels,
-    overwriteColor,
     color,
     greyscale,
     invert,
@@ -232,7 +276,6 @@ function Postprocessing() {
         granularity={granularity * viewport.dpr}
         charactersLimit={charactersLimit}
         fillPixels={fillPixels}
-        overwriteColor={overwriteColor}
         color={color}
         fit={fit}
         greyscale={greyscale}
@@ -247,29 +290,45 @@ function Postprocessing() {
 function Inner() {
   const ContextBridge = useContextBridge(AsciiContext)
 
+  const gui = useStore(({ gui }) => gui)
+
   return (
     <>
-      <Canvas flat linear>
-        <ContextBridge>
-          <Scene />
-          <Postprocessing />
-        </ContextBridge>
-      </Canvas>
+      <div className={s.ascii}>
+        <GUI />
+        <div className={cn(s.canvas, gui && s.open)}>
+          <Canvas
+            flat
+            linear
+            orthographic
+            camera={{ position: [0, 0, 500], near: 0.1, far: 10000 }}
+            resize={{ debounce: 100 }}
+          >
+            <ContextBridge>
+              <Scene />
+              <Postprocessing />
+            </ContextBridge>
+          </Canvas>
+        </div>
+      </div>
       <FontEditor />
+      <ui.Out />
     </>
   )
 }
 
 const DEFAULT = {
-  characters: '*,    ./O#FLY',
-  granularity: 12,
+  characters: ' *,    ./O#FLY',
+  granularity: 8,
   charactersLimit: 16,
-  fontSize: 64,
+  fontSize: 72,
   fillPixels: false,
+  setColor: true,
   color: '#ffffff',
   greyscale: false,
   invert: false,
   matrix: false,
+  setTime: false,
   time: 0,
   fit: true,
 }
@@ -281,9 +340,7 @@ export function ASCII({ children }) {
   )
 
   const [charactersTexture, setCharactersTexture] = useState(null)
-  // const [characters, setCharacters] = useState(
-  //   initialUrlParams.get('characters') || DEFAULT.characters
-  // )
+
   const [canvas, setCanvas] = useState()
 
   const [
@@ -293,19 +350,22 @@ export function ASCII({ children }) {
       charactersLimit,
       fontSize,
       fillPixels,
+      setColor,
       color,
       fit,
       greyscale,
       invert,
       matrix,
+      setTime,
       time,
     },
     _set,
   ] = useControls(
     () => ({
-      characters: {
-        value: initialUrlParams.get('characters') || DEFAULT.characters,
-      },
+      characters: text(
+        initialUrlParams.get('characters') || DEFAULT.characters
+      ),
+
       granularity: {
         min: 4,
         max: 32,
@@ -315,7 +375,7 @@ export function ASCII({ children }) {
       },
       charactersLimit: {
         min: 1,
-        max: 256,
+        max: 48,
         value:
           initialUrlParams.get('charactersLimit') || DEFAULT.charactersLimit,
         step: 1,
@@ -346,26 +406,30 @@ export function ASCII({ children }) {
       matrix: {
         value: initialUrlParams.get('matrix') === 'true' || DEFAULT.matrix,
       },
+      setTime: {
+        value: !!initialUrlParams.get('time') || DEFAULT.setTime,
+        label: 'set time',
+        render: (get) => get('matrix') === true,
+      },
       time: {
         min: 0,
         value: parseFloat(initialUrlParams.get('time')) || DEFAULT.time,
         max: 1,
         step: 0.01,
-        optional: true,
-        disabled: !initialUrlParams.get('time'),
+        render: (get) => get('setTime') === true,
       },
-      // overwriteColor: {
-      //   value: !!initialUrlParams.get('color') || DEFAULT.overwriteColor,
-      //   label: 'overwrite color',
-      // },
 
+      setColor: {
+        value: !!initialUrlParams.get('color') || DEFAULT.setColor,
+        label: 'set color',
+      },
       color: {
         value: initialUrlParams.get('color')
           ? '#' + initialUrlParams.get('color')
           : DEFAULT.color,
-        optional: true,
         label: 'color',
-        disabled: !initialUrlParams.get('color'),
+        render: (get) => get('setColor') === true,
+        s,
       },
     }),
     []
@@ -400,14 +464,13 @@ export function ASCII({ children }) {
     params.set('invert', invert === true)
     params.set('greyscale', greyscale === true)
     params.set('fillPixels', fillPixels === true)
-    // params.set('overwriteColor', overwriteColor === true)
-    if (time) {
+    if (setTime) {
       params.set('time', time)
     } else {
       params.delete('time')
     }
 
-    if (color) {
+    if (setColor) {
       params.set('color', color.replace('#', ''))
     } else {
       params.delete('color')
@@ -418,10 +481,12 @@ export function ASCII({ children }) {
     granularity,
     fontSize,
     fillPixels,
+    setColor,
     color,
     invert,
     greyscale,
     matrix,
+    setTime,
     time,
   ])
 
@@ -433,32 +498,26 @@ export function ASCII({ children }) {
 
   function set({ charactersTexture, canvas, ...props }) {
     if (charactersTexture) setCharactersTexture(charactersTexture)
-    // if (characters) setCharacters(characters)
     if (canvas) setCanvas(canvas)
     _set(props)
   }
 
   return (
     <>
-      {/* <p className={s.instruction}>
-        Drag and drop any file (.glb, .mp4, .mov, .webm, .png, .jpg, .webp,
-        .avif)
-      </p> */}
       <AsciiContext.Provider
         value={{
-          characters,
+          characters: characters.toUpperCase(),
           granularity,
           charactersTexture,
           charactersLimit,
           fontSize,
           fillPixels,
-          overwriteColor: !!color,
-          color,
+          color: setColor ? color : undefined,
           fit,
           greyscale,
           invert,
           matrix,
-          time,
+          time: setTime ? time : undefined,
           set,
         }}
       >

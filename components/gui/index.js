@@ -3,25 +3,25 @@ import Panel from 'assets/svg/panel.svg'
 import cn from 'clsx'
 import levaTheme from 'config/leva'
 import { Leva } from 'leva'
-import { useState } from 'react'
+import { useStore } from 'lib/store'
 import s from './gui.module.scss'
 
 export function GUI() {
-  const [toggle, setToggle] = useState(true)
+  const [gui, setGui] = useStore(({ gui, setGui }) => [gui, setGui])
 
   return (
-    <div className={cn(s.gui, toggle && s.open)}>
+    <div className={cn(s.gui, gui && s.open)}>
       <button
         className={s.toggle}
         onClick={() => {
-          setToggle((v) => !v)
+          setGui(!gui)
         }}
       >
         <Panel />
       </button>
       <header className={s.title}>
         <Logo />
-        <h1>ANISO</h1>
+        <h1>ANISO ASCII TOOL</h1>
       </header>
       <div className={s.main}>
         <div className={s.leva}>
@@ -56,7 +56,11 @@ export function GUI() {
           >
             github
           </a>
-          <a target="_blank" rel="noopener noreferrer" href="">
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href="https://www.loom.com/share/7fd506465ddb4154ba5f6b025301b271"
+          >
             tutorial
           </a>
         </div>

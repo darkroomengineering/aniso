@@ -1,7 +1,14 @@
-const withPWA = require('next-pwa')
 const runtimeCaching = require('next-pwa/cache')
+const withPWA = require('next-pwa')({
+  dest: 'public',
+  register: true,
+  skipWaiting: true,
+  runtimeCaching,
+  disable: process.env.NODE_ENV === 'development',
+  buildExcludes: [/middleware-manifest.json$/],
+  maximumFileSizeToCacheInBytes: 4000000,
+})
 const withTM = require('next-transpile-modules')([])
-const DuplicatePackageCheckerPlugin = require('duplicate-package-checker-webpack-plugin')
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 })
@@ -106,8 +113,6 @@ const nextConfig = {
       use: ['raw-loader', 'glslify-loader'],
     })
 
-    config.plugins.push(new DuplicatePackageCheckerPlugin())
-
     return config
   },
   headers: async () => {
@@ -130,15 +135,6 @@ const nextConfig = {
         ],
       },
     ]
-  },
-  pwa: {
-    dest: 'public',
-    register: true,
-    skipWaiting: true,
-    runtimeCaching,
-    disable: process.env.NODE_ENV === 'development',
-    buildExcludes: [/middleware-manifest.json$/],
-    maximumFileSizeToCacheInBytes: 4000000,
   },
 }
 

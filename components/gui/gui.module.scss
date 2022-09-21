@@ -1,5 +1,4 @@
 .gui {
-  position: fixed;
   width: 312px;
   height: 100vh;
   background-color: #121212;
@@ -12,6 +11,8 @@
   font-size: 9px;
   line-height: 130%;
   transition: transform 600ms var(--ease-out-expo);
+  flex-shrink: 0;
+  position: relative;
 
   &:not(.open) {
     transform: translateX(-100%);
@@ -22,12 +23,17 @@
     }
   }
 
+  &.open {
+    overflow-y: overlay;
+  }
+
   .toggle {
     width: 24px;
     height: 16px;
     position: absolute;
     right: 28px;
     top: 28px;
+    z-index: 3;
 
     &::before {
       content: '';
@@ -43,28 +49,20 @@
     }
   }
 
-  //   .leva {
-  //     color: #000000;
-  //   }
-
   .title {
     font-family: var(--font-NonNaturalGrotesk);
     font-weight: 400;
     font-size: 16px;
     line-height: 90%;
+    margin-bottom: max(68px, calc((100vh - 600px) * 0.32));
+
+    z-index: 2;
 
     svg {
       width: 87px;
       height: 50px;
       margin-bottom: 20px;
     }
-  }
-
-  .main {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
   }
 
   .leva {
@@ -94,13 +92,6 @@
     label[for='time__disable'] {
       position: absolute;
       width: 100%;
-      // padding: 0;
-      // display: block;
-      // width: 8px;
-      // height: 8px;
-      // margin-right: 8px;
-      // border-radius: 100%;
-      // background-color: currentColor;
 
       &::after {
         display: none;
@@ -159,7 +150,7 @@
 
   .links {
     > * {
-      border: 1px solid var(--orange);
+      border: 1px solid var(--white);
       padding: 4px 8px;
       display: inline-block;
 

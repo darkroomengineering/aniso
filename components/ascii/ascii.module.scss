@@ -8,18 +8,28 @@
 }
 
 .dropzone {
-  position: fixed !important;
-  left: 0 !important;
-  top: 0 !important;
-  bottom: 0 !important;
-  right: 0 !important;
-  transform: unset !important;
+  // pointer-events: none;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+}
 
-  * {
-    position: absolute;
-    left: 0 !important;
-    top: 0 !important;
-    bottom: 0 !important;
-    right: 0 !important;
+.ascii {
+  display: flex;
+  height: 100vh;
+}
+
+.canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  transition: padding-left 600ms var(--ease-out-expo);
+
+  &.open {
+    padding-left: 312px;
   }
 }

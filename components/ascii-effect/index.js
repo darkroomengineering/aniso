@@ -27,7 +27,7 @@ class ASCIIEffectImpl extends Effect {
         ['uGranularity', new Uniform(granularity)],
         ['uFillPixels', new Uniform(fillPixels)],
         ['uCharactersLimit', new Uniform(charactersLimit)],
-        ['uOverwriteColor', new Uniform(overwriteColor)],
+        ['uOverwriteColor', new Uniform(color !== undefined)],
         ['uColor', new Uniform(new Color(color))],
         ['uGreyscale', new Uniform(greyscale)],
         ['uInvert', new Uniform(invert)],
@@ -68,7 +68,7 @@ export const ASCIIEffect = forwardRef((props = {}, ref) => {
     effect.uniforms.get('uGranularity').value = granularity
     effect.uniforms.get('uCharactersLimit').value = charactersLimit
     effect.uniforms.get('uFillPixels').value = fillPixels
-    effect.uniforms.get('uOverwriteColor').value = overwriteColor
+    effect.uniforms.get('uOverwriteColor').value = color !== undefined
     effect.uniforms.get('uColor').value.set(color)
     effect.uniforms.get('uGreyscale').value = greyscale
     effect.uniforms.get('uInvert').value = invert
