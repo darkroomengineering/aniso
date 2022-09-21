@@ -4,7 +4,7 @@ export function Layout({
   seo = {
     title: 'Aniso - ASCII Tool',
     description:
-      'Aniso is an open-source ascii tool built by studio freight to generate and customize character-based imagery.',
+      'An open-source ASCII tool built by Studio Freight to generate and customize character-based imagery.',
     image: '',
     keywords: ['ascii', 'renderer', 'webgl', 'react-three-fiber'],
   },

@@ -1,7 +1,7 @@
 {
   "name": "Aniso",
   "short_name": "Aniso",
-  "description": "Aniso is an open-source ASCII tool built by Studio Freight to generate and customize character-based imagery.",
+  "description": "An open-source ASCII tool built by Studio Freight to generate and customize character-based imagery.",
   "icons": [
     {
       "src": "/android-chrome-192x192.png",

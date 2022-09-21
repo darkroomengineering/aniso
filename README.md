@@ -1,6 +1,6 @@
 ## Aniso
 
-Aniso is an open-source ASCII tool built by Studio Freight to generate and customize character-based imagery.
+An open-source ASCII tool built by Studio Freight to generate and customize character-based imagery.
 
 <br/>
 
