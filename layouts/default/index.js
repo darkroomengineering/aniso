@@ -1,3 +1,4 @@
+import { useIsTouchDevice } from '@studio-freight/hamo'
 import { CustomHead } from 'components/custom-head'
 
 export function Layout({
@@ -11,6 +12,7 @@ export function Layout({
   children,
   theme = 'light',
 }) {
+  const isTouchDevice = useIsTouchDevice()
   return (
     <>
       <CustomHead {...seo} />

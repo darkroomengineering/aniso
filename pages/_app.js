@@ -1,4 +1,4 @@
-import { useIsTouchDevice } from '@studio-freight/hamo'
+import { useDebug, useIsTouchDevice } from '@studio-freight/hamo'
 import { RealViewport } from 'components/real-viewport'
 import { GA_ID, GTM_ID } from 'lib/analytics'
 import dynamic from 'next/dynamic'
@@ -11,12 +11,37 @@ const Stats = dynamic(
   () => import('components/stats').then(({ Stats }) => Stats),
   { ssr: false }
 )
+
+// const GridDebugger = dynamic(
+//   () =>
+//     import('components/grid-debugger').then(({ GridDebugger }) => GridDebugger),
+//   { ssr: false }
+// )
+
 function MyApp({ Component, pageProps }) {
   const isTouchDevice = useIsTouchDevice()
   const darkMode = useDarkMode()
 
+  const debug = useDebug()
+
   return (
     <>
+      {debug && (
+        <>
+          {/* <GridDebugger /> */}
+          {/* <Stats /> */}
+        </>
+      )}
+
+      {/* <div id="leva__root">
+          <Leva
+            isRoot
+            titleBar={{ title: 'Settings', drag: false, filter: false }}
+            hideCopyButton
+            collapsed={false}
+          />
+        </div> */}
+      {/* Google Tag Manager - Global base code */}
       {process.env.NODE_ENV !== 'development' && (
         <>
           <Script

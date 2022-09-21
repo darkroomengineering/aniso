@@ -1,4 +1,5 @@
 .gui {
+  // position: fixed;
   width: 312px;
   height: 100vh;
   background-color: #121212;
@@ -49,13 +50,19 @@
     }
   }
 
+  //   .leva {
+  //     color: #000000;
+  //   }
+
   .title {
     font-family: var(--font-NonNaturalGrotesk);
     font-weight: 400;
     font-size: 16px;
     line-height: 90%;
+    // margin-bottom: 7.3vh;
     margin-bottom: max(68px, calc((100vh - 600px) * 0.32));
-
+    // position: sticky;
+    // top: 0;
     z-index: 2;
 
     svg {
@@ -63,6 +70,13 @@
       height: 50px;
       margin-bottom: 20px;
     }
+  }
+
+  .main {
+    // height: 100%;
+    // display: flex;
+    // flex-direction: column;
+    // justify-content: center;
   }
 
   .leva {
@@ -92,6 +106,13 @@
     label[for='time__disable'] {
       position: absolute;
       width: 100%;
+      // padding: 0;
+      // display: block;
+      // width: 8px;
+      // height: 8px;
+      // margin-right: 8px;
+      // border-radius: 100%;
+      // background-color: currentColor;
 
       &::after {
         display: none;

@@ -226,15 +226,21 @@ function Scene() {
       </ui.In>
 
       <group ref={ref}>
+        {/* <mesh geometry={gltf.nodes.Cube.geometry}>
+          <meshBasicMaterial color="#ff0000" />
+        </mesh> */}
+
         {gltf && (
           <>
             <OrbitControls makeDefault />
+            {/* <Bounds fit observe margin={1.2}> */}
             <group
               scale={200}
-              position={asset === '/bust.glb' ? [-50, -50, 0] : [0, 0, 0]}
+              position={asset === '/bust.glb' ? [-200, -120, 0] : [0, 0, 0]}
             >
               <primitive object={gltf} />
             </group>
+            {/* </Bounds> */}
           </>
         )}
 
@@ -244,6 +250,11 @@ function Scene() {
             <meshBasicMaterial map={texture} />
           </mesh>
         )}
+
+        {/* <mesh scale={2}>
+          <boxBufferGeometry attach="geometry" args={[1, 1, 1]} />
+          <meshNormalMaterial attach="material" />
+        </mesh> */}
       </group>
     </>
   )
@@ -252,10 +263,23 @@ function Scene() {
 function Postprocessing() {
   const { gl, viewport } = useThree()
   const { set } = useContext(AsciiContext)
+  // const effectComposer = useRef()
 
   useEffect(() => {
     set({ canvas: gl.domElement })
   }, [gl])
+
+  // useControls(() => ({
+  //   export: button(() => {
+  //     let a = document.createElement('a')
+  //     a.download = 'ASCII'
+  //     // effectComposer.current.render(scene, camera)
+  //     requestAnimationFrame(() => {
+  //       a.href = gl.domElement.toDataURL('image/png;base64')
+  //       a.click()
+  //     })
+  //   }),
+  // }))
 
   const {
     charactersTexture,
@@ -340,7 +364,9 @@ export function ASCII({ children }) {
   )
 
   const [charactersTexture, setCharactersTexture] = useState(null)
-
+  // const [characters, setCharacters] = useState(
+  //   initialUrlParams.get('characters') || DEFAULT.characters
+  // )
   const [canvas, setCanvas] = useState()
 
   const [
@@ -365,7 +391,9 @@ export function ASCII({ children }) {
       characters: text(
         initialUrlParams.get('characters') || DEFAULT.characters
       ),
-
+      // characters: {
+      //   value: initialUrlParams.get('characters') || DEFAULT.characters,
+      // },
       granularity: {
         min: 4,
         max: 32,
@@ -417,8 +445,13 @@ export function ASCII({ children }) {
         max: 1,
         step: 0.01,
         render: (get) => get('setTime') === true,
+        // optional: true,
+        // disabled: !initialUrlParams.get('time'),
       },
-
+      // overwriteColor: {
+      //   value: !!initialUrlParams.get('color') || DEFAULT.overwriteColor,
+      //   label: 'overwrite color',
+      // },
       setColor: {
         value: !!initialUrlParams.get('color') || DEFAULT.setColor,
         label: 'set color',
@@ -427,9 +460,10 @@ export function ASCII({ children }) {
         value: initialUrlParams.get('color')
           ? '#' + initialUrlParams.get('color')
           : DEFAULT.color,
+        // optional: true,
         label: 'color',
         render: (get) => get('setColor') === true,
-        s,
+        // disabled: !initialUrlParams.get('color'),
       },
     }),
     []
@@ -464,6 +498,7 @@ export function ASCII({ children }) {
     params.set('invert', invert === true)
     params.set('greyscale', greyscale === true)
     params.set('fillPixels', fillPixels === true)
+    // params.set('overwriteColor', overwriteColor === true)
     if (setTime) {
       params.set('time', time)
     } else {
@@ -498,12 +533,17 @@ export function ASCII({ children }) {
 
   function set({ charactersTexture, canvas, ...props }) {
     if (charactersTexture) setCharactersTexture(charactersTexture)
+    // if (characters) setCharacters(characters)
     if (canvas) setCanvas(canvas)
     _set(props)
   }
 
   return (
     <>
+      {/* <p className={s.instruction}>
+        Drag and drop any file (.glb, .mp4, .mov, .webm, .png, .jpg, .webp,
+        .avif)
+      </p> */}
       <AsciiContext.Provider
         value={{
           characters: characters.toUpperCase(),
