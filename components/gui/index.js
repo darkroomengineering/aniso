@@ -21,7 +21,7 @@ export function GUI() {
       </button>
       <header className={s.title}>
         <Logo />
-        <h1>ANISO ASCII TOOL</h1>
+        <h1>ANISO_ASCII_TOOL</h1>
       </header>
       <div className={s.main}>
         <div className={s.leva}>
@@ -38,7 +38,7 @@ export function GUI() {
         </div>
         <div className={s.description}>
           <p>
-            Aniso is an open-source ASCII tool built by{' '}
+            the Aniso ascii tool is an open-source ASCII tool built by{' '}
             <a href="https://studiofreight.com">Studio Freight</a> to generate
             and customize character-based imagery.
           </p>
@@ -52,16 +52,16 @@ export function GUI() {
           <a
             target="_blank"
             rel="noopener noreferrer"
-            href="https://github.com/studio-freight/ascii"
+            href="https://github.com/studio-freight/aniso"
           >
             github
           </a>
           <a
             target="_blank"
             rel="noopener noreferrer"
-            href="https://www.loom.com/share/7fd506465ddb4154ba5f6b025301b271"
+            href="https://studiofreight.com"
           >
-            tutorial
+            studiofreight.com
           </a>
         </div>
       </div>

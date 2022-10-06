@@ -66,9 +66,19 @@
     z-index: 2;
 
     svg {
-      width: 87px;
-      height: 50px;
+      width: 191px;
+      height: auto;
       margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 9px;
+      color: var(--grey);
+      font-family: var(--font-NonNaturalMono);
+      line-height: 120%;
+      font-weight: 300;
+      letter-spacing: 0.01em;
+      text-transform: uppercase;
     }
   }
 

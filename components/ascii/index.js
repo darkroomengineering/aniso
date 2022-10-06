@@ -234,10 +234,7 @@ function Scene() {
           <>
             <OrbitControls makeDefault />
             {/* <Bounds fit observe margin={1.2}> */}
-            <group
-              scale={200}
-              position={asset === '/bust.glb' ? [-200, -120, 0] : [0, 0, 0]}
-            >
+            <group scale={200}>
               <primitive object={gltf} />
             </group>
             {/* </Bounds> */}

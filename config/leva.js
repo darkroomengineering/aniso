@@ -4,8 +4,8 @@ const theme = {
     elevation2: '#121212', // bg color of the rows (main panel color)
     elevation3: '#f2f2f2', // bg color of the inputs
     accent1: '#F2F2F2',
-    accent2: '#FA4C14',
-    accent3: '#FA4C14',
+    accent2: 'var(--blue)',
+    accent3: 'var(--blue)',
     highlight1: '$accent1',
     highlight2: '$accent1',
     highlight3: '#fefefe',
