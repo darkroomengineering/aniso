@@ -52,7 +52,7 @@ export function FontEditor() {
     if (!context) return
     context.clearRect(0, 0, 1024, 1024)
     contextDebug.clearRect(0, 0, 1024, 1024)
-    context.font = `${fontSize}px monospace`
+    context.font = `${fontSize}px CustomFont, monospace`
     context.textAlign = 'center'
     context.textBaseline = 'middle'
 

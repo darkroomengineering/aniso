@@ -15,6 +15,10 @@
   flex-shrink: 0;
   position: relative;
 
+  input[id='characters'] {
+    font-family: 'CustomFont', var(--font-NonNaturalMono);
+  }
+
   &:not(.open) {
     transform: translateX(-100%);
 

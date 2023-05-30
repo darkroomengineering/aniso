@@ -205,11 +205,35 @@ function Scene() {
 
               setDrag(false)
 
+              const filename = e.dataTransfer.files[0].name
+              const isFont =
+                filename.endsWith('.ttf') ||
+                filename.endsWith('.otf') ||
+                filename.endsWith('.woff') ||
+                filename.endsWith('.woff2')
+
               const reader = new FileReader()
               reader.addEventListener(
                 'load',
-                function () {
-                  setAsset(reader.result)
+                async function (event) {
+                  if (isFont) {
+                    const fontData = event.target.result
+                    const fontName = 'CustomFont' // Choose a name for your custom font
+
+                    const fontFace = `
+                    @font-face {
+                      font-family: '${fontName}';
+                      src: url(${fontData});
+                    }
+                  `
+
+                    const styleElement = document.createElement('style')
+                    styleElement.innerHTML = fontFace
+
+                    document.head.appendChild(styleElement)
+                  } else {
+                    setAsset(reader.result)
+                  }
                 },
                 false
               )
