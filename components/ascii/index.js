@@ -312,7 +312,9 @@ function Postprocessing() {
     invert,
     matrix,
     time,
+    background,
   } = useContext(AsciiContext)
+  console.log('background', background)
 
   return (
     <EffectComposer>
@@ -327,6 +329,7 @@ function Postprocessing() {
         invert={invert}
         matrix={matrix}
         time={time}
+        background={background}
       />
     </EffectComposer>
   )
@@ -348,6 +351,13 @@ function Inner() {
             orthographic
             camera={{ position: [0, 0, 500], near: 0.1, far: 10000 }}
             resize={{ debounce: 100 }}
+            gl={{
+              antialias: false,
+              alpha: true,
+              depth: false,
+              stencil: false,
+              powerPreference: 'high-performance',
+            }}
           >
             <ContextBridge>
               <Scene />
@@ -370,6 +380,7 @@ const DEFAULT = {
   fillPixels: false,
   setColor: true,
   color: '#ffffff',
+  background: '#000000',
   greyscale: false,
   invert: false,
   matrix: false,
@@ -405,6 +416,7 @@ export function ASCII({ children }) {
       matrix,
       setTime,
       time,
+      background,
     },
     _set,
   ] = useControls(
@@ -486,6 +498,13 @@ export function ASCII({ children }) {
         render: (get) => get('setColor') === true,
         // disabled: !initialUrlParams.get('color'),
       },
+      background: {
+        value: initialUrlParams.get('background')
+          ? '#' + initialUrlParams.get('background')
+          : DEFAULT.background,
+        // optional: true,
+        label: 'background',
+      },
     }),
     []
   )
@@ -531,6 +550,8 @@ export function ASCII({ children }) {
     } else {
       params.delete('color')
     }
+
+    params.set('background', background.replace('#', ''))
     return params
   }, [
     characters,
@@ -544,6 +565,7 @@ export function ASCII({ children }) {
     matrix,
     setTime,
     time,
+    background,
   ])
 
   useEffect(() => {
@@ -579,6 +601,7 @@ export function ASCII({ children }) {
           invert,
           matrix,
           time: setTime ? time : undefined,
+          background,
           set,
         }}
       >

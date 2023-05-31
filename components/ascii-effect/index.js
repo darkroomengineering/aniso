@@ -19,6 +19,7 @@ class ASCIIEffectImpl extends Effect {
     greyscale = false,
     invert = false,
     matrix = false,
+    background = '#000000',
   } = {}) {
     super('ASCIIEffect', fragmentShader, {
       blendFunction: BlendFunction.NORMAL,
@@ -33,6 +34,7 @@ class ASCIIEffectImpl extends Effect {
         ['uInvert', new Uniform(invert)],
         ['uMatrix', new Uniform(matrix)],
         ['uTime', new Uniform(0)],
+        ['uBackground', new Uniform(new Color('#ff0000'))],
       ]),
     })
   }
@@ -62,6 +64,7 @@ export const ASCIIEffect = forwardRef((props = {}, ref) => {
       invert,
       matrix,
       time,
+      background,
     } = props
 
     effect.uniforms.get('uCharactersTexture').value = charactersTexture
@@ -73,6 +76,7 @@ export const ASCIIEffect = forwardRef((props = {}, ref) => {
     effect.uniforms.get('uGreyscale').value = greyscale
     effect.uniforms.get('uInvert').value = invert
     effect.uniforms.get('uMatrix').value = matrix
+    effect.uniforms.get('uBackground').value.set(background)
 
     effect.overwriteTime = time !== undefined
 

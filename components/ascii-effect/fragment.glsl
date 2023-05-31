@@ -8,6 +8,16 @@ uniform bool uGreyscale;
 uniform bool uInvert;
 uniform bool uMatrix;
 uniform float uTime;
+uniform vec3 uBackground;
+
+vec3 blendNormal(vec3 base, vec3 blend) {
+	return blend;
+}
+
+vec3 blendNormal(vec3 base, vec3 blend, float opacity) {
+	return (blendNormal(base, blend) * opacity + base * (1.0 - opacity));
+}
+
 
 float grayscale(vec3 c) {
     return c.x * 0.299 + c.y * 0.587 + c.z * 0.114;
@@ -94,8 +104,17 @@ void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor)
     } else {
         color = pixelizedColor * ascii.r;
     }
+    
+    if(color.rgb == vec3(0.)) {
+        color.a = 0.;
+    }
 
 
+    // outputColor = vec4(uBackground, 1.) + color;
+    // if(outputColor.rgb == vec3(0.)) {
+    //     outputColor.a = 0.;
+    // }
 
-    outputColor = color;
+    float alpha = uBackground == vec3(0.) ? color.a : 1.;
+    outputColor = vec4(blendNormal(uBackground, color.rgb, color.a), alpha);
 }
