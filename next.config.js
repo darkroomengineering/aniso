@@ -1,37 +1,34 @@
-const runtimeCaching = require('next-pwa/cache')
-const withPWA = require('next-pwa')({
-  dest: 'public',
-  register: true,
-  skipWaiting: true,
-  runtimeCaching,
-  disable: process.env.NODE_ENV === 'development',
-  buildExcludes: [/middleware-manifest.json$/],
-  maximumFileSizeToCacheInBytes: 4000000,
-})
-const withTM = require('next-transpile-modules')([])
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 })
 
 const nextConfig = {
   reactStrictMode: true,
-  optimization: {
-    mergeDuplicateChunks: true,
-  },
+  devIndicators: false,
   experimental: {
-    optimizeCss: true,
-    browsersListForSwc: true,
-    legacyBrowsers: false,
+    // optimizeCss: true,
+    reactCompiler: true,
+    optimizePackageImports: ['@react-three/drei', '@react-three/fiber', 'gsap'],
   },
   compiler: {
     removeConsole: process.env.NODE_ENV !== 'development',
   },
-  swcMinify: true,
   images: {
-    // ADD in case you need to import SVGs in next/image component
     // dangerouslyAllowSVG: true,
-    // contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-    domains: ['images.ctfassets.net'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.ctfassets.net',
+      },
+      {
+        protocol: 'https',
+        hostname: 'a-us.storyblok.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'assets.darkroom.engineering',
+      },
+    ],
     formats: ['image/avif', 'image/webp'],
   },
   async redirects() {
@@ -43,13 +40,10 @@ const nextConfig = {
       },
     ]
   },
-  webpack: (config, options) => {
-    const { dir } = options
-
-    config.module.rules.push(
-      {
-        test: /\.svg$/,
-        use: [
+  turbopack: {
+    rules: {
+      '*.svg': {
+        loaders: [
           {
             loader: '@svgr/webpack',
             options: {
@@ -65,7 +59,7 @@ const nextConfig = {
                   'removeStyleElement',
                   'removeScriptElement',
                   'prefixIds',
-                  'cleanupIDs',
+                  'cleanupIds',
                   {
                     name: 'cleanupNumericValues',
                     params: {
@@ -95,25 +89,13 @@ const nextConfig = {
             },
           },
         ],
+        as: '*.js',
       },
-      {
-        test: /\.(graphql|gql)$/,
-        include: [dir],
-        exclude: /node_modules/,
-        use: [
-          {
-            loader: 'graphql-tag/loader',
-          },
-        ],
-      }
-    )
-
-    config.module.rules.push({
-      test: /\.(glsl|vs|fs|vert|frag)$/,
-      use: ['raw-loader', 'glslify-loader'],
-    })
-
-    return config
+      '*.{glsl,vs,fs,vert,frag}': {
+        loaders: ['raw-loader'],
+        as: '*.js',
+      },
+    },
   },
   headers: async () => {
     return [
@@ -139,7 +121,7 @@ const nextConfig = {
 }
 
 module.exports = (_phase) => {
-  const plugins = [withPWA, withTM, withBundleAnalyzer]
+  const plugins = [withBundleAnalyzer]
   return plugins.reduce((acc, plugin) => plugin(acc), {
     ...nextConfig,
   })

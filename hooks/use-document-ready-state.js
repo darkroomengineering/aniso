@@ -1,5 +1,4 @@
-import { useLayoutEffect } from '@studio-freight/hamo'
-import { useState } from 'react'
+import { useLayoutEffect, useState } from 'react'
 
 export function _useDocumentReadyState() {
   const [readyState, setReadyState] = useState(document.readyState)

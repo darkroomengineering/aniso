@@ -6,7 +6,7 @@ export const Footer = () => {
     <footer className={s.footer}>
       <div className="layout-block">
         <h2>
-          <Link href="mailto:hello@studiofreight.com">contact</Link>
+          <Link href="mailto:hello@darkroom.engineering">contact</Link>
         </h2>
       </div>
     </footer>

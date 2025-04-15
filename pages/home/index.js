@@ -1,8 +1,14 @@
-import { useMediaQuery } from '@studio-freight/hamo'
 import { ASCII } from 'components/ascii'
 import { ClientOnly } from 'components/isomorphic'
+import { useMediaQuery } from 'hamo'
 import { Layout } from 'layouts/default'
+// import dynamic from 'next/dynamic'
 import s from './home.module.scss'
+
+// const ASCII = dynamic(
+//   () => import('components/ascii').then((mod) => mod.ASCII),
+//   { ssr: false }
+// )
 
 export default function Home() {
   const isMobile = useMediaQuery('(max-width: 800px)')

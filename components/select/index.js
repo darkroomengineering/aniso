@@ -11,11 +11,13 @@ export const Root = forwardRef(function SelectFn(
         <SelectPrimitive.Value />
         <SelectPrimitive.Icon>⌄</SelectPrimitive.Icon>
       </SelectPrimitive.Trigger>
-      <SelectPrimitive.Content>
-        <SelectPrimitive.ScrollUpButton>⌃</SelectPrimitive.ScrollUpButton>
-        <SelectPrimitive.Viewport>{children}</SelectPrimitive.Viewport>
-        <SelectPrimitive.ScrollDownButton>⌄</SelectPrimitive.ScrollDownButton>
-      </SelectPrimitive.Content>
+      <SelectPrimitive.Portal>
+        <SelectPrimitive.Content>
+          <SelectPrimitive.ScrollUpButton>⌃</SelectPrimitive.ScrollUpButton>
+          <SelectPrimitive.Viewport>{children}</SelectPrimitive.Viewport>
+          <SelectPrimitive.ScrollDownButton>⌄</SelectPrimitive.ScrollDownButton>
+        </SelectPrimitive.Content>
+      </SelectPrimitive.Portal>
     </SelectPrimitive.Root>
   )
 })

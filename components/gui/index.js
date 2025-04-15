@@ -7,11 +7,13 @@ import { useStore } from 'lib/store'
 import s from './gui.module.scss'
 
 export function GUI() {
-  const [gui, setGui] = useStore(({ gui, setGui }) => [gui, setGui])
+  const gui = useStore((state) => state.gui)
+  const setGui = useStore((state) => state.setGui)
 
   return (
     <div className={cn(s.gui, gui && s.open)}>
       <button
+        type="button"
         className={s.toggle}
         onClick={() => {
           setGui(!gui)
@@ -39,8 +41,8 @@ export function GUI() {
         <div className={s.description}>
           <p>
             the Aniso ascii tool is an open-source ASCII tool built by{' '}
-            <a href="https://studiofreight.com">Studio Freight</a> to generate
-            and customize character-based imagery.
+            <a href="https://darkroom.engineering">darkroom.engineering</a> to
+            generate and customize character-based imagery.
           </p>
           <br />
           <p>
@@ -52,16 +54,16 @@ export function GUI() {
           <a
             target="_blank"
             rel="noopener noreferrer"
-            href="https://github.com/studio-freight/aniso"
+            href="https://github.com/darkroomengineering/aniso"
           >
             github
           </a>
           <a
             target="_blank"
             rel="noopener noreferrer"
-            href="https://studiofreight.com"
+            href="https://darkroom.engineering"
           >
-            studiofreight.com
+            darkroom.engineering
           </a>
         </div>
       </div>

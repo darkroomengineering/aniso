@@ -1,4 +1,4 @@
-import { useLayoutEffect } from '@studio-freight/hamo'
+import { useLayoutEffect } from 'react'
 import { useWindowSize } from 'react-use'
 
 export const RealViewport = () => {
@@ -9,7 +9,7 @@ export const RealViewport = () => {
     function onWindowResize() {
       document.documentElement.style.setProperty(
         '--vh',
-        window.innerHeight * 0.01 + 'px'
+        `${window.innerHeight * 0.01}px`
       )
     }
 

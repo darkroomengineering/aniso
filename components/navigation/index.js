@@ -1,16 +1,15 @@
-import { useLayoutEffect } from '@studio-freight/hamo'
 import cn from 'clsx'
 import { Link } from 'components/link'
 import { useStore } from 'lib/store'
 import { useRouter } from 'next/router'
-import shallow from 'zustand/shallow'
+import { useLayoutEffect } from 'react'
 import s from './navigation.module.scss'
 
 export const Navigation = () => {
-  const [navIsOpen, setNavIsOpen] = useStore(
-    (state) => [state.navIsOpen, state.setNavIsOpen],
-    shallow
-  )
+  const [navIsOpen, setNavIsOpen] = useStore((state) => [
+    state.navIsOpen,
+    state.setNavIsOpen,
+  ])
 
   const router = useRouter()
 

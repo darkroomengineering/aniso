@@ -1,5 +1,5 @@
-import { useMediaQuery } from '@studio-freight/hamo'
 import cn from 'clsx'
+import { useMediaQuery } from 'hamo'
 import { useMemo, useState } from 'react'
 import s from './grid-debugger.module.scss'
 
@@ -8,7 +8,7 @@ export const GridDebugger = () => {
   const isMobile = useMediaQuery('(max-width: 800px)')
 
   const columns = useMemo(() => {
-    return parseInt(
+    return Number.parseInt(
       getComputedStyle(document.documentElement).getPropertyValue(
         '--layout-columns-count'
       )
@@ -18,6 +18,7 @@ export const GridDebugger = () => {
   return (
     <div className={s.grid}>
       <button
+        type="button"
         onClick={() => {
           setVisible(!visible)
         }}
@@ -26,8 +27,8 @@ export const GridDebugger = () => {
       </button>
       {visible && (
         <div className={cn('layout-grid', s.debugger)}>
-          {new Array(columns).fill(0).map((_, key) => (
-            <span key={key}></span>
+          {new Array(columns).fill(0).map((_, index) => (
+            <span key={`grid-column-${index}`} />
           ))}
         </div>
       )}

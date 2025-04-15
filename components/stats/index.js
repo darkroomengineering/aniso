@@ -1,11 +1,11 @@
 import { raf } from '@react-spring/rafz'
-import { useLayoutEffect } from '@studio-freight/hamo'
+import { useLayoutEffect } from 'react'
 import _Stats from 'stats.js'
 import s from './stats.module.scss'
 
 export const Stats = () => {
   useLayoutEffect(() => {
-    var stats = new _Stats()
+    const stats = new _Stats()
     stats.showPanel(0) // 0: fps, 1: ms, 2: mb, 3+: custom
     document.body.appendChild(stats.dom)
     stats.dom.classList.add(s.stats)

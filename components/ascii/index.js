@@ -1,4 +1,4 @@
-import { OrbitControls, useAspect, useContextBridge } from '@react-three/drei'
+import { OrbitControls, useAspect } from '@react-three/drei'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { EffectComposer } from '@react-three/postprocessing'
 import cn from 'clsx'
@@ -8,7 +8,8 @@ import { GUI } from 'components/gui'
 import { button, useControls } from 'leva'
 import { text } from 'lib/leva/text'
 import { useStore } from 'lib/store'
-import { useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
+import * as THREE from 'three'
 import {
   AnimationMixer,
   Group,
@@ -25,32 +26,29 @@ import { AsciiContext } from './context'
 
 const ui = tunnel()
 
-function Scene() {
+// Initialize DRACOLoader as a singleton
+const dracoLoader = new DRACOLoader()
+dracoLoader.setDecoderPath(
+  'https://cdn.jsdelivr.net/npm/three@0.175.0/examples/jsm/libs/draco/'
+)
+
+// Initialize GLTFLoader as a singleton
+const gltfLoader = new GLTFLoader()
+gltfLoader.setDRACOLoader(dracoLoader)
+
+const Scene = () => {
   const ref = useRef()
-
   const [asset, setAsset] = useState('/bust.glb')
-
-  const gltfLoader = useMemo(() => {
-    const loader = new GLTFLoader()
-
-    const dracoLoader = new DRACOLoader()
-    dracoLoader.setDecoderPath(
-      'https://cdn.jsdelivr.net/npm/three@0.140.0/examples/js/libs/draco/'
-    )
-    loader.setDRACOLoader(dracoLoader)
-
-    return loader
-  }, [])
-
   const [mixer, setMixer] = useState()
+  const [model, setModel] = useState()
 
-  useFrame((_, t) => {
-    mixer?.update(t)
+  useFrame((state, delta) => {
+    mixer?.update(delta)
   })
 
-  const gltf = useMemo(() => {
+  useEffect(() => {
     if (!asset) return
-    let src = asset
+    const src = asset
 
     if (
       src.startsWith('data:application/octet-stream;base64') ||
@@ -58,41 +56,50 @@ function Scene() {
     ) {
       const group = new Group()
 
-      gltfLoader.load(src, ({ scene, animations }) => {
-        const mixer = new AnimationMixer(scene)
-        setMixer(mixer)
-        const clips = animations
+      gltfLoader.load(
+        src,
+        ({ scene, animations }) => {
+          const mixer = new AnimationMixer(scene)
+          setMixer(mixer)
+          const clips = animations
 
-        clips.forEach((clip) => {
-          mixer.clipAction(clip).play()
-        })
-
-        group.add(scene)
-        scene.traverse((mesh) => {
-          if (
-            Object.keys(mesh.userData)
-              .map((v) => v.toLowerCase())
-              .includes('occlude')
-          ) {
-            mesh.material = new MeshBasicMaterial({ color: '#000000' })
-          } else {
-            mesh.material = new MeshNormalMaterial()
+          for (const clip of clips) {
+            const action = mixer.clipAction(clip)
+            action.setLoop(THREE.LoopRepeat, Number.POSITIVE_INFINITY)
+            action.clampWhenFinished = true
+            action.play()
           }
-        })
-      })
 
-      return group
+          group.add(scene)
+          scene.traverse((mesh) => {
+            if (
+              Object.keys(mesh.userData)
+                .map((v) => v.toLowerCase())
+                .includes('occlude')
+            ) {
+              mesh.material = new MeshBasicMaterial({ color: '#000000' })
+            } else {
+              mesh.material = new MeshNormalMaterial()
+            }
+          })
+          setModel(group)
+        },
+        undefined,
+        (error) => {
+          console.error('Error loading GLTF:', error)
+        }
+      )
     }
   }, [asset])
 
   const [texture, setTexture] = useState()
 
   useEffect(() => {
-    if (gltf) setTexture(null)
-  }, [gltf])
+    if (model) setTexture(null)
+  }, [model])
 
   useEffect(() => {
-    let src = asset
+    const src = asset
 
     if (
       src.startsWith('data:video') ||
@@ -129,27 +136,13 @@ function Scene() {
 
   const { viewport, camera } = useThree()
 
-  // const initialCamera = useRef()
-
-  // useEffect(() => {
-  //   initialCamera.current = camera.clone()
-  // }, [])
-
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     camera.position.copy(initialCamera.current.position)
-  //     camera.rotation.copy(initialCamera.current.rotation)
-  //   }, 0)
-  // }, [texture, gltf, camera])
-
-  const dimensions = useMemo(() => {
+  const dimensions = (() => {
     if (!texture) return
     if (texture.isVideoTexture) {
       return [texture.image.videoWidth, texture.image.videoHeight]
-    } else {
-      return [texture.image.naturalWidth, texture.image.naturalHeight]
     }
-  }, [texture])
+    return [texture.image.naturalWidth, texture.image.naturalHeight]
+  })()
 
   const scale = useAspect(
     dimensions?.[0] || viewport.width, // Pixel-width
@@ -202,7 +195,6 @@ function Scene() {
             className={s.dropzone}
             onDrop={(e) => {
               e.preventDefault()
-
               setDrag(false)
 
               const filename = e.dataTransfer.files[0].name
@@ -215,10 +207,10 @@ function Scene() {
               const reader = new FileReader()
               reader.addEventListener(
                 'load',
-                async function (event) {
+                (event) => {
                   if (isFont) {
                     const fontData = event.target.result
-                    const fontName = 'CustomFont' // Choose a name for your custom font
+                    const fontName = 'CustomFont'
 
                     const fontFace = `
                     @font-face {
@@ -250,32 +242,21 @@ function Scene() {
       </ui.In>
 
       <group ref={ref}>
-        {/* <mesh geometry={gltf.nodes.Cube.geometry}>
-          <meshBasicMaterial color="#ff0000" />
-        </mesh> */}
-
-        {gltf && (
+        {model && (
           <>
-            <OrbitControls makeDefault />
-            {/* <Bounds fit observe margin={1.2}> */}
+            <OrbitControls makeDefault enableDamping />
             <group scale={200}>
-              <primitive object={gltf} />
+              <primitive object={model} />
             </group>
-            {/* </Bounds> */}
           </>
         )}
 
         {texture && (
           <mesh scale={fit ? scale : [viewport.width, viewport.height, 1]}>
-            <planeBufferGeometry />
+            <planeGeometry />
             <meshBasicMaterial map={texture} />
           </mesh>
         )}
-
-        {/* <mesh scale={2}>
-          <boxBufferGeometry attach="geometry" args={[1, 1, 1]} />
-          <meshNormalMaterial attach="material" />
-        </mesh> */}
       </group>
     </>
   )
@@ -284,23 +265,10 @@ function Scene() {
 function Postprocessing() {
   const { gl, viewport } = useThree()
   const { set } = useContext(AsciiContext)
-  // const effectComposer = useRef()
 
   useEffect(() => {
     set({ canvas: gl.domElement })
   }, [gl])
-
-  // useControls(() => ({
-  //   export: button(() => {
-  //     let a = document.createElement('a')
-  //     a.download = 'ASCII'
-  //     // effectComposer.current.render(scene, camera)
-  //     requestAnimationFrame(() => {
-  //       a.href = gl.domElement.toDataURL('image/png;base64')
-  //       a.click()
-  //     })
-  //   }),
-  // }))
 
   const {
     charactersTexture,
@@ -336,9 +304,7 @@ function Postprocessing() {
 }
 
 function Inner() {
-  const ContextBridge = useContextBridge(AsciiContext)
-
-  const gui = useStore(({ gui }) => gui)
+  const gui = useStore((state) => state.gui)
 
   return (
     <>
@@ -359,10 +325,8 @@ function Inner() {
               powerPreference: 'high-performance',
             }}
           >
-            <ContextBridge>
-              <Scene />
-              <Postprocessing />
-            </ContextBridge>
+            <Scene />
+            <Postprocessing />
           </Canvas>
         </div>
       </div>
@@ -373,7 +337,7 @@ function Inner() {
 }
 
 const DEFAULT = {
-  characters: ' *,    ./O#SF',
+  characters: ' *,    ./O#DE',
   granularity: 8,
   charactersLimit: 16,
   fontSize: 72,
@@ -390,15 +354,9 @@ const DEFAULT = {
 }
 
 export function ASCII({ children }) {
-  const initialUrlParams = useMemo(
-    () => new URLSearchParams(window.location.search),
-    []
-  )
+  const initialUrlParams = new URLSearchParams(window.location.search)
 
   const [charactersTexture, setCharactersTexture] = useState(null)
-  // const [characters, setCharacters] = useState(
-  //   initialUrlParams.get('characters') || DEFAULT.characters
-  // )
   const [canvas, setCanvas] = useState()
 
   const [
@@ -424,9 +382,6 @@ export function ASCII({ children }) {
       characters: text(
         initialUrlParams.get('characters') || DEFAULT.characters
       ),
-      // characters: {
-      //   value: initialUrlParams.get('characters') || DEFAULT.characters,
-      // },
       granularity: {
         min: 4,
         max: 32,
@@ -474,35 +429,26 @@ export function ASCII({ children }) {
       },
       time: {
         min: 0,
-        value: parseFloat(initialUrlParams.get('time')) || DEFAULT.time,
+        value: Number.parseFloat(initialUrlParams.get('time')) || DEFAULT.time,
         max: 1,
         step: 0.01,
         render: (get) => get('setTime') === true,
-        // optional: true,
-        // disabled: !initialUrlParams.get('time'),
       },
-      // overwriteColor: {
-      //   value: !!initialUrlParams.get('color') || DEFAULT.overwriteColor,
-      //   label: 'overwrite color',
-      // },
       setColor: {
         value: !!initialUrlParams.get('color') || DEFAULT.setColor,
         label: 'set color',
       },
       color: {
         value: initialUrlParams.get('color')
-          ? '#' + initialUrlParams.get('color')
+          ? `#${initialUrlParams.get('color')}`
           : DEFAULT.color,
-        // optional: true,
         label: 'color',
         render: (get) => get('setColor') === true,
-        // disabled: !initialUrlParams.get('color'),
       },
       background: {
         value: initialUrlParams.get('background')
-          ? '#' + initialUrlParams.get('background')
+          ? `#${initialUrlParams.get('background')}`
           : DEFAULT.background,
-        // optional: true,
         label: 'background',
       },
     }),
@@ -512,7 +458,7 @@ export function ASCII({ children }) {
   useControls(
     () => ({
       export: button(() => {
-        let a = document.createElement('a')
+        const a = document.createElement('a')
         a.download = 'ASCII'
 
         requestAnimationFrame(() => {
@@ -527,8 +473,7 @@ export function ASCII({ children }) {
     [canvas]
   )
 
-  const UrlParams = useMemo(() => {
-    // apply new url params
+  const UrlParams = (() => {
     const params = new URLSearchParams()
     params.set('characters', characters)
     params.set('granularity', granularity)
@@ -538,7 +483,6 @@ export function ASCII({ children }) {
     params.set('invert', invert === true)
     params.set('greyscale', greyscale === true)
     params.set('fillPixels', fillPixels === true)
-    // params.set('overwriteColor', overwriteColor === true)
     if (setTime) {
       params.set('time', time)
     } else {
@@ -553,30 +497,15 @@ export function ASCII({ children }) {
 
     params.set('background', background.replace('#', ''))
     return params
-  }, [
-    characters,
-    granularity,
-    fontSize,
-    fillPixels,
-    setColor,
-    color,
-    invert,
-    greyscale,
-    matrix,
-    setTime,
-    time,
-    background,
-  ])
+  })()
 
   useEffect(() => {
-    // change history
-    const url = window.origin + '?' + UrlParams.toString()
+    const url = `${window.origin}?${UrlParams.toString()}`
     window.history.replaceState({}, null, url)
   }, [UrlParams])
 
   function set({ charactersTexture, canvas, ...props }) {
     if (charactersTexture) setCharactersTexture(charactersTexture)
-    // if (characters) setCharacters(characters)
     if (canvas) setCanvas(canvas)
     _set(props)
   }
@@ -584,9 +513,9 @@ export function ASCII({ children }) {
   return (
     <>
       {/* <p className={s.instruction}>
-        Drag and drop any file (.glb, .mp4, .mov, .webm, .png, .jpg, .webp,
-        .avif)
-      </p> */}
+      Drag and drop any file (.glb, .mp4, .mov, .webm, .png, .jpg, .webp,
+      .avif)
+    </p> */}
       <AsciiContext.Provider
         value={{
           characters: characters.toUpperCase(),

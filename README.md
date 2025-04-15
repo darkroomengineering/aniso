@@ -1,6 +1,6 @@
 ## Aniso
 
-An open-source ASCII tool built by darkroom.engineering and designed by Studio Freight to generate and customize character-based imagery.
+An open-source ASCII tool built by darkroom.engineering to generate and customize character-based imagery.
 
 <br/>
 
