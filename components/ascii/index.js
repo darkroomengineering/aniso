@@ -38,7 +38,7 @@ gltfLoader.setDRACOLoader(dracoLoader)
 
 const Scene = () => {
   const ref = useRef()
-  const [asset, setAsset] = useState('/bust.glb')
+  const [asset, setAsset] = useState('/darkroom-move.glb')
   const [mixer, setMixer] = useState()
   const [model, setModel] = useState()
 
@@ -137,11 +137,18 @@ const Scene = () => {
   const { viewport, camera } = useThree()
 
   const dimensions = (() => {
-    if (!texture) return
-    if (texture.isVideoTexture) {
-      return [texture.image.videoWidth, texture.image.videoHeight]
+    if (!texture) return null
+    try {
+      if (texture.isVideoTexture && texture.image) {
+        return [texture.image.videoWidth, texture.image.videoHeight]
+      }
+      if (texture.image) {
+        return [texture.image.naturalWidth, texture.image.naturalHeight]
+      }
+    } catch (error) {
+      console.warn('Could not get texture dimensions:', error)
     }
-    return [texture.image.naturalWidth, texture.image.naturalHeight]
+    return null
   })()
 
   const scale = useAspect(
@@ -338,13 +345,13 @@ function Inner() {
 
 const DEFAULT = {
   characters: ' *,    ./O#DE',
-  granularity: 8,
-  charactersLimit: 16,
-  fontSize: 72,
+  granularity: 4,
+  charactersLimit: 17,
+  fontSize: 90,
   fillPixels: false,
   setColor: true,
-  color: '#ffffff',
-  background: '#000000',
+  color: '#E30613',
+  background: '#6a3a3a',
   greyscale: false,
   invert: false,
   matrix: false,
