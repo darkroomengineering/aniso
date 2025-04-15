@@ -346,8 +346,8 @@ function Inner() {
 const DEFAULT = {
   characters: ' *,    ./O#DE',
   granularity: 4,
-  charactersLimit: 17,
-  fontSize: 90,
+  charactersLimit: 25,
+  fontSize: 87,
   fillPixels: false,
   setColor: true,
   color: '#E30613',
