@@ -4,14 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "next build --turbopack",
     "start": "next start",
     "lint": "next lint",
     "postbuild": "next-sitemap",
     "analyze": "cross-env ANALYZE=true next build",
     "analyze:server": "cross-env BUNDLE_ANALYZE=server next build",
     "analyze:browser": "cross-env BUNDLE_ANALYZE=browser next build",
-    "prepare": "husky install"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.4",
@@ -29,13 +28,10 @@
     "embla-carousel-react": "^8.6.0",
     "glslify-loader": "^2.0.0",
     "hamo": "^1.0.0-dev.6",
-    "husky": "^9.1.7",
+    "lefthook": "^1.11.10",
     "leva": "^0.10.0",
     "lint-staged": "^15.5.1",
     "next": "15.3.0",
-    "next-pwa": "5.6.0",
-    "next-seo": "^6.6.0",
-    "next-sitemap": "^4.2.3",
     "postprocessing": "^6.37.2",
     "raw-loader": "^4.0.2",
     "react": "19.1.0",
@@ -51,6 +47,7 @@
     "zustand": "5.0.3"
   },
   "devDependencies": {
+    "@biomejs/biome": "1.9.4",
     "@next/bundle-analyzer": "^15.3.0",
     "@svgr/webpack": "^8.1.0"
   }
