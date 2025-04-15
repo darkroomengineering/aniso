@@ -1,7 +1,7 @@
 {
-  "name": "Satus",
-  "short_name": "satus",
-  "description": "Our starting point",
+  "name": "Aniso",
+  "short_name": "Aniso",
+  "description": "An open-source ASCII tool built by darkroom.engineering to generate and customize character-based imagery.",
   "icons": [
     {
       "src": "/android-chrome-192x192.png",
@@ -16,7 +16,7 @@
       "purpose": "any"
     }
   ],
-  "theme_color": "#336CFF",
+  "theme_color": "#E30613",
   "background_color": "#000000",
   "start_url": "/",
   "scope": ".",
