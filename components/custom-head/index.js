@@ -1,3 +1,4 @@
+import { isDev } from 'env'
 import NextHead from 'next/head'
 
 export function CustomHead({ title = '', description, image, keywords }) {
@@ -9,7 +10,7 @@ export function CustomHead({ title = '', description, image, keywords }) {
         <meta
           name="robots"
           content={
-            process.env.NODE_ENV !== 'development'
+            isDev
               ? 'index,follow'
               : 'noindex,nofollow'
           }
@@ -17,7 +18,7 @@ export function CustomHead({ title = '', description, image, keywords }) {
         <meta
           name="googlebot"
           content={
-            process.env.NODE_ENV !== 'development'
+            isDev
               ? 'index,follow'
               : 'noindex,nofollow'
           }
