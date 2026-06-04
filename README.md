@@ -6,12 +6,12 @@ An open-source ASCII tool built by darkroom.engineering to generate and customiz
 
 ## Features
 
-- Granularity control
-- Character limit
-- Character picker
-- Image color overwrite
-- Image drop support
-- Exporter
+- **Granularity control** — tune how finely the source image maps to characters
+- **Character limit** — cap the set of characters used to render the output
+- **Character picker** — choose which glyphs build the image
+- **Color overwrite** — override the colors sampled from the source image
+- **Drag & drop** — drop an image straight onto the canvas
+- **Exporter** — save the generated result out
 
 <br/>
 
