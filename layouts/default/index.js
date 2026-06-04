@@ -1,4 +1,4 @@
-import { useIsTouchDevice } from '@studio-freight/hamo'
+import { useIsTouchDevice } from 'hooks'
 import { CustomHead } from 'components/custom-head'
 
 export function Layout({
