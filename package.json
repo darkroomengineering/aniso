@@ -31,7 +31,7 @@
     "lefthook": "^1.11.10",
     "leva": "^0.10.0",
     "lint-staged": "^15.5.1",
-    "next": "15.3.0",
+    "next": "15.5.19",
     "postprocessing": "^6.37.2",
     "raw-loader": "^4.0.2",
     "react": "19.1.0",
